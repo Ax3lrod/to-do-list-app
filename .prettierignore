@@ -1,0 +1,8 @@
+eslint.config.mjs
+nuxt.config.ts
+package-lock.json
+package.json
+README.md
+server/tsconfig.json
+tailwind.config.js
+tsconfig.json
