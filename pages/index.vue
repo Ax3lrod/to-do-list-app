@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="lg:hidden">
       <button>
         <NuxtImg
           src="/tuneicon.svg"
