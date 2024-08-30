@@ -6,27 +6,25 @@
         src="/listsymbol.svg"
         height="35"
         width="35"
-        class="fixed left-1/2 transform -translate-x-[150px] translate-y-[30px] md:-translate-x-[300px]"
+        class="fixed left-1/2 transform -translate-x-[150px] translate-y-[35px] md:-translate-x-[300px]"
       />
     </button>
-    <button>
+    <button @click="goToComingSoon">
       <NuxtImg
         src="/calendarsymbol.svg"
         height="40"
         width="40"
-        class="fixed left-1/2 transform translate-x-[125px] translate-y-[25px] md:translate-x-[275px]"
+        class="fixed left-1/2 transform translate-x-[125px] translate-y-[30px] md:translate-x-[275px]"
       />
     </button>
-    <div
-      class="w-screen bg-teal1 h-[90px] rounded-t-3xl lg:hidden bottom-0 z-0"
-    />
+    <div class="w-screen bg-teal1 h-[90px] rounded-t-3xl bottom-0 z-0" />
   </div>
   <button @click="showModal = true">
     <NuxtImg
       src="/addbutton2.svg"
       width="75"
       height="75"
-      class="lg:hidden fixed left-1/2 transform -translate-x-1/2 bottom-[50px]"
+      class="fixed left-1/2 transform -translate-x-1/2 bottom-[50px]"
     />
   </button>
 
@@ -43,18 +41,18 @@
         <input
           v-model="taskName"
           placeholder="Task Name"
-          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
           type="text"
         />
         <input
           v-model="dueDate"
           placeholder="Due Date"
-          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
           type="date"
         />
         <!--<select
           id="product"
-          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
         >
           <option value="product-1">Product 1</option>
           <option value="product-2">Product 2</option>
@@ -64,19 +62,28 @@
         <input
           v-model="taskType"
           placeholder="Task Type"
-          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
           type="text"
+        />
+        <input
+          v-model="taskPriority"
+          placeholder="Task Priority (1 - 10)"
+          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
+          type="number"
         />
         <textarea
           v-model="taskDescription"
           placeholder="Task Description"
-          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+          class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
           name="taskDescription"
         />
       </form>
       <button
         class="bg-[#e00d0d] text-white px-4 py-2 rounded h-[40px] w-[80px]"
-        @click="showModal = false"
+        @click="
+          showModal = false;
+          showNotice = false;
+        "
       >
         Cancel
       </button>
@@ -87,16 +94,51 @@
         Save
       </button>
     </div>
+
+    <!-- Pop Up Notice -->
+    <div
+      v-if="showNotice"
+      role="alert"
+      class="absolute rounded-lg z-50 bg-teal1 shadow-lg w-[300px] p-6 top-0 mt-5 border-solid border-white"
+    >
+      <div class="font-semibold text-xl text-center mb-3">Hey Listen!</div>
+      <div class="mb-3">{{ noticeContent }}</div>
+      <div class="items-center justify-center text-center">
+        <button
+          class="rounded-full bg-red-600 w-[24px] h-[24px] text-white mt-[10px]"
+          @click="showNotice = false"
+        >
+          X
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const goToComingSoon = () => {
+  router.push("/comingsoon");
+};
 
 // Form data
 const taskName = ref("");
 const dueDate = ref("");
 const taskType = ref("");
+const taskPriority = ref("");
 const taskDescription = ref("");
+
+// show/hide modal
+const showModal = ref(false);
+
+// show/hide notice
+const showNotice = ref(false);
+
+// notice content
+const noticeContent = ref("");
 
 // Function to generate a unique ID
 const generateUniqueId = () => {
@@ -106,16 +148,30 @@ const generateUniqueId = () => {
   return `${dateString}-${randomPart}`;
 };
 
-// show/hide modal
-const showModal = ref(false);
-
 // Save task
 const saveTask = () => {
+  // Validate that all fields are filled
+  if (
+    !taskName.value ||
+    !dueDate.value ||
+    !taskType.value ||
+    !taskPriority.value ||
+    !taskDescription.value
+  ) {
+    const errorMessage = ref("");
+    showNotice.value = true;
+    errorMessage.value = "Please fill in all fields before saving.";
+    noticeContent.value = errorMessage.value;
+    disappearNotice();
+    return;
+  }
+
   const newTask = {
     taskId: generateUniqueId(),
     taskName: taskName.value,
     dueDate: dueDate.value,
     taskType: taskType.value,
+    taskPriority: taskPriority.value,
     taskDescription: taskDescription.value,
   };
 
@@ -132,7 +188,19 @@ const saveTask = () => {
   taskName.value = "";
   dueDate.value = "";
   taskType.value = "";
+  taskPriority.value = "";
   taskDescription.value = "";
   showModal.value = false;
+
+  // Show success message
+  showNotice.value = true;
+  noticeContent.value = "Task saved successfully!";
+  disappearNotice();
+};
+
+const disappearNotice = () => {
+  setTimeout(() => {
+    showNotice.value = false;
+  }, 3000);
 };
 </script>
