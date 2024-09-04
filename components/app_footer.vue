@@ -6,7 +6,7 @@
         src="/listsymbol.svg"
         height="35"
         width="35"
-        class="fixed left-1/2 transform -translate-x-[150px] translate-y-[35px] md:-translate-x-[300px]"
+        class="fixed left-1/2 transform -translate-x-[120px] translate-y-[35px] md:-translate-x-[225px] lg:-translate-x-[300px] xl:-translate-x-[380px]"
       />
     </button>
     <button @click="goToComingSoon">
@@ -14,7 +14,7 @@
         src="/calendarsymbol.svg"
         height="40"
         width="40"
-        class="fixed left-1/2 transform translate-x-[125px] translate-y-[30px] md:translate-x-[275px]"
+        class="fixed left-1/2 transform translate-x-[85px] translate-y-[30px] md:translate-x-[195px] lg:translate-x-[275px] xl:translate-x-[340px]"
       />
     </button>
     <div class="w-screen bg-teal1 h-[90px] rounded-t-3xl bottom-0 z-0" />
@@ -70,6 +70,11 @@
           placeholder="Task Priority (1 - 10)"
           class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
           type="number"
+          min="1"
+          max="10"
+          step="1"
+          required
+          @input="validatePriority"
         />
         <textarea
           v-model="taskDescription"
@@ -128,8 +133,19 @@ const goToComingSoon = () => {
 const taskName = ref("");
 const dueDate = ref("");
 const taskType = ref("");
-const taskPriority = ref("");
+const taskPriority = ref(1);
 const taskDescription = ref("");
+const priorityError = ref("");
+
+const validatePriority = () => {
+  if (taskPriority.value < 1 || taskPriority.value > 10) {
+    showNotice.value = true;
+    priorityError.value = "Priority must be between 1 and 10";
+    noticeContent.value = priorityError.value;
+  } else {
+    priorityError.value = "";
+  }
+};
 
 // show/hide modal
 const showModal = ref(false);
@@ -150,6 +166,13 @@ const generateUniqueId = () => {
 
 // Save task
 const saveTask = () => {
+  if (taskPriority.value < 1 || taskPriority.value > 10) {
+    showNotice.value = true;
+    priorityError.value = "Priority must be between 1 and 10";
+    noticeContent.value = priorityError.value;
+    return;
+  }
+
   // Validate that all fields are filled
   if (
     !taskName.value ||
@@ -196,6 +219,8 @@ const saveTask = () => {
   showNotice.value = true;
   noticeContent.value = "Task saved successfully!";
   disappearNotice();
+
+  window.location.reload();
 };
 
 const disappearNotice = () => {

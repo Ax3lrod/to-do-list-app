@@ -10,13 +10,29 @@
           class="fixed left-[70px] mt-[10px] transform"
         />
       </button>
-      <button>
+      <button @click="openSearchBar">
         <NuxtImg
           src="/searchicon.svg"
           width="30"
           height="30"
           class="fixed right-[70px] mt-[10px] transform"
         />
+      </button>
+    </div>
+
+    <!-- search bar -->
+    <div
+      v-if="searchBar"
+      class="fixed top-[23px] left-0 right-0 ml-auto mr-auto mt-0 w-[80%]"
+    >
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search Tasks"
+        class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 w-full focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
+      />
+      <button class="absolute top-[5px] right-[15px]" @click="closeSearchBar">
+        X
       </button>
     </div>
 
@@ -27,7 +43,7 @@
       </div>
       <div v-else>
         <div
-          v-for="task in tasks"
+          v-for="task in filteredTasks"
           :key="task.taskId"
           class="relative bg-gray-100 p-4 mb-4 rounded-lg shadow-lg"
         >
@@ -119,7 +135,9 @@
             type="number"
             min="1"
             max="10"
+            step="1"
             required
+            @input="validatePriority"
           />
           <textarea
             v-model="taskDescription"
@@ -144,22 +162,59 @@
           </div>
         </form>
       </div>
+
+      <!-- Pop Up Notice -->
+      <div
+        v-if="showNotice"
+        role="alert"
+        class="absolute rounded-lg z-50 bg-teal1 shadow-lg w-[300px] p-6 top-0 mt-5 border-solid border-white"
+      >
+        <div class="font-semibold text-xl text-center mb-3">Hey Listen!</div>
+        <div class="mb-3">{{ noticeContent }}</div>
+        <div class="items-center justify-center text-center">
+          <button
+            class="rounded-full bg-red-600 w-[24px] h-[24px] text-white mt-[10px]"
+            @click="showNotice = false"
+          >
+            X
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const tasks = ref([]);
 const taskMenu = ref(false);
 const currentTaskId = ref(null); // Store the ID of the current task being edited
+const searchBar = ref(false);
+const searchQuery = ref("");
+const priorityError = ref("");
+
+// show/hide notice
+const showNotice = ref(false);
+
+// notice content
+const noticeContent = ref("");
+
+const validatePriority = () => {
+  if (taskPriority.value < 1 || taskPriority.value > 10) {
+    showNotice.value = true;
+    priorityError.value = "Priority must be between 1 and 10";
+    noticeContent.value = priorityError.value;
+  } else {
+    priorityError.value = "";
+  }
+};
 
 // Form data
 const taskName = ref("");
 const dueDate = ref("");
 const taskType = ref("");
-const taskPriority = ref("");
+const taskPriority = ref(1);
 const taskDescription = ref("");
 const showModal = ref(false);
 
@@ -176,6 +231,14 @@ const openTaskMenu = (task) => {
 
 const closeTaskMenu = () => {
   taskMenu.value = false;
+};
+
+const openSearchBar = () => {
+  searchBar.value = true;
+};
+
+const closeSearchBar = () => {
+  searchBar.value = false;
 };
 
 const editTask = () => {
@@ -198,6 +261,22 @@ const saveTask = () => {
     return;
   }
 
+  // Validate that all fields are filled
+  if (
+    !taskName.value ||
+    !dueDate.value ||
+    !taskType.value ||
+    !taskPriority.value ||
+    !taskDescription.value
+  ) {
+    const errorMessage = ref("");
+    showNotice.value = true;
+    errorMessage.value = "Please fill in all fields before saving.";
+    noticeContent.value = errorMessage.value;
+    disappearNotice();
+    return;
+  }
+
   const taskIndex = tasks.value.findIndex(
     (task) => task.taskId === currentTaskId.value,
   );
@@ -210,6 +289,12 @@ const saveTask = () => {
     localStorage.setItem("tasks", JSON.stringify(tasks.value));
   }
   showModal.value = false;
+
+  // Show success message
+  showNotice.value = true;
+  noticeContent.value = "Task saved successfully!";
+  disappearNotice();
+
   window.location.reload();
 };
 
@@ -224,5 +309,23 @@ const deleteTask = () => {
 const cancelEdit = () => {
   showModal.value = false;
   currentTaskId.value = null;
+};
+
+const filteredTasks = computed(() => {
+  if (!searchQuery.value) return tasks.value;
+  return tasks.value.filter(
+    (task) =>
+      task.taskName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      task.taskDescription
+        .toLowerCase()
+        .includes(searchQuery.value.toLowerCase()) ||
+      task.taskType.toLowerCase().includes(searchQuery.value.toLowerCase()),
+  );
+});
+
+const disappearNotice = () => {
+  setTimeout(() => {
+    showNotice.value = false;
+  }, 3000);
 };
 </script>
