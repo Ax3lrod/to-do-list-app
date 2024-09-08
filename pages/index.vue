@@ -1,30 +1,17 @@
 <!-- eslint-disable vue/html-self-closing -->
 <template>
   <div>
-    <div>
-      <button>
-        <NuxtImg
-          src="/tuneicon.svg"
-          height="30"
-          width="30"
-          class="fixed left-[70px] mt-[10px] transform"
-        />
+    <div class="flex w-full mt-6 justify-between items-center px-8">
+      <button class="flex justify-center items-center" @click="openFilterMenu">
+        <NuxtImg src="/tuneicon.svg" height="30" width="30" class="" />
       </button>
-      <button @click="openSearchBar">
-        <NuxtImg
-          src="/searchicon.svg"
-          width="30"
-          height="30"
-          class="fixed right-[70px] mt-[10px] transform"
-        />
+      <button class="flex justify-center items-center" @click="openSearchBar">
+        <NuxtImg src="/searchicon.svg" width="30" height="30" class="" />
       </button>
     </div>
 
     <!-- search bar -->
-    <div
-      v-if="searchBar"
-      class="fixed top-[23px] left-0 right-0 ml-auto mr-auto mt-0 w-[80%]"
-    >
+    <div v-if="searchBar" class="absolute left-0 right-0 mx-auto -mt-9 w-[80%]">
       <input
         v-model="searchQuery"
         type="text"
@@ -37,7 +24,7 @@
     </div>
 
     <!-- Task List -->
-    <div class="task-list mt-[70px] mx-[20px]">
+    <div class="task-list mt-[40px] mx-[20px]">
       <div v-if="tasks.length === 0" class="text-center text-gray-500">
         No tasks found. Add a new task to get started!
       </div>
@@ -181,6 +168,51 @@
         </div>
       </div>
     </div>
+
+    <!-- Filter Menu -->
+    <div
+      v-if="filterMenu"
+      class="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-50"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg w-[300px]">
+        <div class="text-xl font-semibold mb-4 justify-center text-center">
+          Filter by
+        </div>
+        <div>
+          <div class="font-semibold">Deadline</div>
+          <div class="flex w-full">
+            <div class="w-full">Farthest</div>
+            <input type="radio" class="" name="deadlinefilter" />
+          </div>
+          <div class="flex w-full">
+            <div class="w-full">Closest</div>
+            <input type="radio" class="" name="deadlinefilter" />
+          </div>
+          <div class="font-semibold mt-4">Priority</div>
+          <div class="flex w-full">
+            <div class="w-full">Highest</div>
+            <input type="radio" class="" name="priorityfilter" />
+          </div>
+          <div class="flex w-full">
+            <div class="w-full">Lowest</div>
+            <input type="radio" class="" name="priorityfilter" />
+          </div>
+        </div>
+        <div class="flex justify-between mt-4">
+          <button
+            class="bg-[#e00d0d] text-white px-4 py-2 rounded h-[40px] w-[80px]"
+          >
+            Clear
+          </button>
+          <button
+            class="bg-teal1 text-white px-4 py-2 rounded h-[40px] w-[80px]"
+            @click="closeFilterMenu"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -193,6 +225,7 @@ const currentTaskId = ref(null); // Store the ID of the current task being edite
 const searchBar = ref(false);
 const searchQuery = ref("");
 const priorityError = ref("");
+const filterMenu = ref(false);
 
 // show/hide notice
 const showNotice = ref(false);
@@ -235,6 +268,14 @@ const closeTaskMenu = () => {
 
 const openSearchBar = () => {
   searchBar.value = true;
+};
+
+const openFilterMenu = () => {
+  filterMenu.value = true;
+};
+
+const closeFilterMenu = () => {
+  filterMenu.value = false;
 };
 
 const closeSearchBar = () => {

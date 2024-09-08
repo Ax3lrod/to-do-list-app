@@ -1,23 +1,16 @@
 <!-- eslint-disable vue/html-self-closing -->
 <template>
-  <div class="relative">
-    <button>
-      <NuxtImg
-        src="/listsymbol.svg"
-        height="35"
-        width="35"
-        class="fixed left-1/2 transform -translate-x-[120px] translate-y-[35px] md:-translate-x-[225px] lg:-translate-x-[300px] xl:-translate-x-[380px]"
-      />
-    </button>
-    <button @click="goToComingSoon">
-      <NuxtImg
-        src="/calendarsymbol.svg"
-        height="40"
-        width="40"
-        class="fixed left-1/2 transform translate-x-[85px] translate-y-[30px] md:translate-x-[195px] lg:translate-x-[275px] xl:translate-x-[340px]"
-      />
-    </button>
-    <div class="w-screen bg-teal1 h-[90px] rounded-t-3xl bottom-0 z-0" />
+  <div
+    class="w-screen bg-teal1 h-[90px] rounded-t-3xl bottom-0 z-0 justify-center items-center flex"
+  >
+    <div class="w-full flex justify-center items-center">
+      <button class="flex w-full justify-center">
+        <NuxtImg src="/listsymbol.svg" height="35" width="35" class="" />
+      </button>
+      <button class="flex w-full justify-center" @click="goToComingSoon">
+        <NuxtImg src="/calendarsymbol.svg" height="40" width="40" class="" />
+      </button>
+    </div>
   </div>
   <button @click="showModal = true">
     <NuxtImg
