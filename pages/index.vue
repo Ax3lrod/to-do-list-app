@@ -176,31 +176,56 @@
     >
       <div class="bg-white p-6 rounded-lg shadow-lg w-[300px]">
         <div class="text-xl font-semibold mb-4 justify-center text-center">
-          Filter by
+          Sort by
         </div>
         <div>
           <div class="font-semibold">Deadline</div>
           <div class="flex w-full">
             <div class="w-full">Farthest</div>
-            <input type="radio" class="" name="deadlinefilter" />
+            <input
+              type="radio"
+              class=""
+              name="filter"
+              :checked="selectedDeadlineFilter === 'Farthest'"
+              @click="setDeadlineFilter('Farthest')"
+            />
           </div>
           <div class="flex w-full">
             <div class="w-full">Closest</div>
-            <input type="radio" class="" name="deadlinefilter" />
+            <input
+              type="radio"
+              class=""
+              name="filter"
+              :checked="selectedDeadlineFilter === 'Closest'"
+              @click="setDeadlineFilter('Closest')"
+            />
           </div>
           <div class="font-semibold mt-4">Priority</div>
           <div class="flex w-full">
             <div class="w-full">Highest</div>
-            <input type="radio" class="" name="priorityfilter" />
+            <input
+              type="radio"
+              class=""
+              name="filter"
+              :checked="selectedPriorityFilter === 'Highest'"
+              @click="setPriorityFilter('Highest')"
+            />
           </div>
           <div class="flex w-full">
             <div class="w-full">Lowest</div>
-            <input type="radio" class="" name="priorityfilter" />
+            <input
+              type="radio"
+              class=""
+              name="filter"
+              :checked="selectedPriorityFilter === 'Lowest'"
+              @click="setPriorityFilter('Lowest')"
+            />
           </div>
         </div>
         <div class="flex justify-between mt-4">
           <button
             class="bg-[#e00d0d] text-white px-4 py-2 rounded h-[40px] w-[80px]"
+            @click="clearFilters"
           >
             Clear
           </button>
@@ -226,6 +251,10 @@ const searchBar = ref(false);
 const searchQuery = ref("");
 const priorityError = ref("");
 const filterMenu = ref(false);
+
+// Filter Options
+const selectedDeadlineFilter = ref(null);
+const selectedPriorityFilter = ref(null);
 
 // show/hide notice
 const showNotice = ref(false);
@@ -353,16 +382,55 @@ const cancelEdit = () => {
 };
 
 const filteredTasks = computed(() => {
-  if (!searchQuery.value) return tasks.value;
-  return tasks.value.filter(
-    (task) =>
-      task.taskName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      task.taskDescription
-        .toLowerCase()
-        .includes(searchQuery.value.toLowerCase()) ||
-      task.taskType.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  );
+  // Start with a copy of the original tasks array
+  let tasksCopy = [...tasks.value];
+
+  // Filter by search query if provided
+  if (searchQuery.value) {
+    tasksCopy = tasksCopy.filter(
+      (task) =>
+        task.taskName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        task.taskDescription
+          .toLowerCase()
+          .includes(searchQuery.value.toLowerCase()) ||
+        task.taskType.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    );
+  }
+
+  // Filter by deadline
+  if (selectedDeadlineFilter.value === "Closest") {
+    tasksCopy = tasksCopy.sort(
+      (a, b) => new Date(a.dueDate) - new Date(b.dueDate),
+    );
+  } else if (selectedDeadlineFilter.value === "Farthest") {
+    tasksCopy = tasksCopy.sort(
+      (a, b) => new Date(b.dueDate) - new Date(a.dueDate),
+    );
+  }
+
+  // Filter by priority
+  if (selectedPriorityFilter.value === "Highest") {
+    tasksCopy = tasksCopy.sort((a, b) => b.taskPriority - a.taskPriority);
+  } else if (selectedPriorityFilter.value === "Lowest") {
+    tasksCopy = tasksCopy.sort((a, b) => a.taskPriority - b.taskPriority);
+  }
+
+  return tasksCopy;
 });
+
+// Filter menu handling
+const setDeadlineFilter = (filter) => {
+  selectedDeadlineFilter.value = filter;
+};
+
+const setPriorityFilter = (filter) => {
+  selectedPriorityFilter.value = filter;
+};
+
+const clearFilters = () => {
+  selectedDeadlineFilter.value = null;
+  selectedPriorityFilter.value = null;
+};
 
 const disappearNotice = () => {
   setTimeout(() => {
