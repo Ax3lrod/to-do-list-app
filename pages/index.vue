@@ -397,22 +397,22 @@ const filteredTasks = computed(() => {
     );
   }
 
-  // Filter by deadline
-  if (selectedDeadlineFilter.value === "Closest") {
-    tasksCopy = tasksCopy.sort(
-      (a, b) => new Date(a.dueDate) - new Date(b.dueDate),
-    );
-  } else if (selectedDeadlineFilter.value === "Farthest") {
-    tasksCopy = tasksCopy.sort(
-      (a, b) => new Date(b.dueDate) - new Date(a.dueDate),
-    );
+  // Sort by deadline if deadline filter is selected
+  if (selectedDeadlineFilter.value) {
+    if (selectedDeadlineFilter.value === "Closest") {
+      tasksCopy.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    } else if (selectedDeadlineFilter.value === "Farthest") {
+      tasksCopy.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+    }
   }
 
-  // Filter by priority
-  if (selectedPriorityFilter.value === "Highest") {
-    tasksCopy = tasksCopy.sort((a, b) => b.taskPriority - a.taskPriority);
-  } else if (selectedPriorityFilter.value === "Lowest") {
-    tasksCopy = tasksCopy.sort((a, b) => a.taskPriority - b.taskPriority);
+  // Sort by priority if priority filter is selected
+  if (selectedPriorityFilter.value) {
+    if (selectedPriorityFilter.value === "Highest") {
+      tasksCopy.sort((a, b) => b.taskPriority - a.taskPriority);
+    } else if (selectedPriorityFilter.value === "Lowest") {
+      tasksCopy.sort((a, b) => a.taskPriority - b.taskPriority);
+    }
   }
 
   return tasksCopy;
@@ -421,10 +421,12 @@ const filteredTasks = computed(() => {
 // Filter menu handling
 const setDeadlineFilter = (filter) => {
   selectedDeadlineFilter.value = filter;
+  selectedPriorityFilter.value = null;
 };
 
 const setPriorityFilter = (filter) => {
   selectedPriorityFilter.value = filter;
+  selectedDeadlineFilter.value = null;
 };
 
 const clearFilters = () => {
