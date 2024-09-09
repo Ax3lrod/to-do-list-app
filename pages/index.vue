@@ -11,16 +11,17 @@
     </div>
 
     <!-- search bar -->
-    <div v-if="searchBar" class="absolute left-0 right-0 mx-auto -mt-9 w-[80%]">
+    <div
+      v-if="searchBar"
+      class="absolute left-0 right-0 mx-auto -mt-9 w-screen px-5 lg:px-20 flex items-center justify-end"
+    >
       <input
         v-model="searchQuery"
         type="text"
         placeholder="Search Tasks"
-        class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 w-full focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
+        class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 w-full focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-teal1 transition ease-in-out duration-150"
       />
-      <button class="absolute top-[5px] right-[15px]" @click="closeSearchBar">
-        X
-      </button>
+      <button class="absolute mr-3" @click="closeSearchBar">X</button>
     </div>
 
     <!-- Task List -->
